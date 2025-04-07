@@ -16,8 +16,8 @@ x-shared: &shared
     - DB_POSTGRESDB_HOST=postgres
     - DB_POSTGRESDB_PORT=5432
     - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
-    - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
-    - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+    - DB_POSTGRESDB_USER=${POSTGRES_USER}
+    - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
     - EXECUTIONS_MODE=queue
     - QUEUE_BULL_REDIS_HOST=redis
     - QUEUE_HEALTH_CHECK_ACTIVE=true
@@ -47,10 +47,11 @@ services:
       - db_storage:/var/lib/postgresql/data
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      test: ['CMD-SHELL', "sh -c 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
 
   redis:
     image: redis:6-alpine
@@ -73,18 +74,18 @@ services:
       - "traefik.http.routers.n8n.rule=Host(`$DOMAIN`)"
       - "traefik.http.routers.n8n.tls.certresolver=http-challenge"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
-      - 'traefik.http.routers.n8n.rule=PathPrefix(`/${SUBFOLDER}{regex:$$|/.*}`)'
-      - 'traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes=/${SUBFOLDER}'
-      - 'traefik.http.routers.n8n.middlewares=n8n-stripprefix'
-      - "traefik.http.routers.n8n.tls.certresolver=mytlschallenge"
-      - "traefik.http.middlewares.n8n.headers.SSLRedirect=true"
-      - "traefik.http.middlewares.n8n.headers.STSSeconds=315360000"
-      - "traefik.http.middlewares.n8n.headers.browserXSSFilter=true"
-      - "traefik.http.middlewares.n8n.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.n8n.headers.forceSTSHeader=true"
-      - "traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN}"
-      - "traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true"
-      - "traefik.http.middlewares.n8n.headers.STSPreload=true"
+#      - 'traefik.http.routers.n8n.rule=PathPrefix(`/${SUBFOLDER}{regex:$$|/.*}`)'
+#      - 'traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes=/${SUBFOLDER}'
+#      - 'traefik.http.routers.n8n.middlewares=n8n-stripprefix'
+#      - "traefik.http.routers.n8n.tls.certresolver=mytlschallenge"
+#      - "traefik.http.middlewares.n8n.headers.SSLRedirect=true"
+#      - "traefik.http.middlewares.n8n.headers.STSSeconds=315360000"
+#      - "traefik.http.middlewares.n8n.headers.browserXSSFilter=true"
+#      - "traefik.http.middlewares.n8n.headers.contentTypeNosniff=true"
+#      - "traefik.http.middlewares.n8n.headers.forceSTSHeader=true"
+#      - "traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN}"
+#      - "traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true"
+#      - "traefik.http.middlewares.n8n.headers.STSPreload=true"
     networks:
       - default
       - traefik-proxy
