@@ -11,6 +11,12 @@ networks:
 x-shared: &shared
   restart: always
   image: docker.n8n.io/n8nio/n8n
+  user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
   environment:
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
@@ -22,9 +28,9 @@ x-shared: &shared
     - QUEUE_BULL_REDIS_HOST=redis
     - QUEUE_HEALTH_CHECK_ACTIVE=true
     - N8N_ENCRYPTION_KEY=${ENCRYPTION_KEY}
-  links:
-    - postgres
-    - redis
+#  links:
+#    - postgres
+#    - redis
   volumes:
     - n8n_storage:/home/node/.n8n
   depends_on:
@@ -37,6 +43,12 @@ services:
   postgres:
     image: postgres:16
     restart: always
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -54,6 +66,12 @@ services:
   redis:
     image: redis:6-alpine
     restart: always
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     volumes:
       - redis_storage:/data
     healthcheck:
