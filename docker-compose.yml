@@ -14,7 +14,7 @@ x-shared: &shared
   user: ${PUID:-1000}:${PGID:-1000}
     security_opt:
       - "no-new-privileges:true"
-    cap-drop:
+    cap_drop:
       - SETUID
       - SETGID
   environment:
@@ -46,7 +46,7 @@ services:
     user: ${PUID:-1000}:${PGID:-1000}
     security_opt:
       - "no-new-privileges:true"
-    cap-drop:
+    cap_drop:
       - SETUID
       - SETGID
     environment:
@@ -69,7 +69,7 @@ services:
     user: ${PUID:-1000}:${PGID:-1000}
     security_opt:
       - "no-new-privileges:true"
-    cap-drop:
+    cap_drop:
       - SETUID
       - SETGID
     volumes:
