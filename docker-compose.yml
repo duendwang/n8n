@@ -11,8 +11,8 @@ networks:
 x-shared: &shared
   restart: always
   image: docker.n8n.io/n8nio/n8n
-    security_opt:
-      - "no-new-privileges:true"
+  security_opt:
+    - "no-new-privileges:true"
   environment:
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
